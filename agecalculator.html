@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Age Calculator</title>
+</head>
+<body>
+  <h2>Age Calculator</h2>
+
+  <form id="ageForm">
+    <input type="text" id="name" placeholder="Enter your name" required /><br /><br />
+    <input type="date" id="dob" required /><br /><br />
+    <button type="submit">Calculate Age</button>
+  </form>
+
+  <h3 id="result"></h3>
+
+  <script>
+    const form = document.getElementById('ageForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const dob = document.getElementById('dob').value;
+
+      if (!name || !dob) {
+        result.textContent = 'Please enter both name and date of birth.';
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:3000/calculate-age', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, dob })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          result.textContent = data.message;
+        } else {
+          result.textContent = data.error || 'Something went wrong.';
+        }
+      } catch (err) {
+        result.textContent = ' Failed to connect to server.';
+      }
+    });
+  </script>
+</body>
+</html>
